@@ -20,7 +20,7 @@ public class ShipObject extends GameObject {
     }
 
     private void putInFrame() {
-        // Верхняя граница (только нижняя половина экрана)
+
         if (getY() > (GameSettings.SCREEN_HEIGHT / 2f - height / 2f)) {
             setY(GameSettings.SCREEN_HEIGHT / 2f - height / 2f);
         }

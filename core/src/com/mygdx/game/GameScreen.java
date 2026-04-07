@@ -16,8 +16,7 @@ public class GameScreen implements Screen {
         this.myGdxGame = myGdxGame;
 
         shipObject = new ShipObject(
-                GameSettings.SCREEN_WIDTH / 2f,
-                150,
+                GameSettings.SCREEN_WIDTH / 2f, 150,
                 GameSettings.SHIP_WIDTH,
                 GameSettings.SHIP_HEIGHT,
                 myGdxGame.world
