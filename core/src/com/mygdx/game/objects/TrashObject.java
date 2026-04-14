@@ -1,27 +1,24 @@
 package com.mygdx.game.objects;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
-
+import com.mygdx.game.GameResources;
 import java.util.Random;
 
 public class TrashObject extends GameObject {
+    public boolean wasHit = false;
 
-
-    private static final int paddingHorizontal = 30;
-    Body body;
-    public TrashObject(int width, int height, String texturePath, World world) {
+    public TrashObject(World world) {
         super(
-                width / 2 + paddingHorizontal + (new Random()).nextInt((GameSettings.SCREEN_WIDTH - 2 * paddingHorizontal - width)),
-                GameSettings.SCREEN_HEIGHT + height / 2,
-                width, height,
-                texturePath = "textures/trash.png",
-                world
+                GameSettings.TRASH_WIDTH / 2f + 40 + new Random().nextInt(GameSettings.SCREEN_WIDTH - 80 - GameSettings.TRASH_WIDTH),
+                GameSettings.SCREEN_HEIGHT + GameSettings.TRASH_HEIGHT / 2f,
+                GameSettings.TRASH_WIDTH, GameSettings.TRASH_HEIGHT,
+                GameResources.TRASH_IMG_PATH, GameSettings.CATEGORY_TRASH, world
         );
-
-        body.setLinearVelocity(new Vector2(0, -GameSettings.TRASH_VELOCITY));
+        setLinearVelocity(0, -GameSettings.TRASH_SPEED);
     }
 
+    public boolean isInFrame() {
+        return getY() + getHeight() / 2 > 0;
+    }
 }
