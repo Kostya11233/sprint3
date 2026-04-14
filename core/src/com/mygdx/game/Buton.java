@@ -34,7 +34,7 @@ public class Buton {
     }
 
     public boolean isHit(float tx, float ty) {
-        float realY = GameSettings.SCREEN_HEIGHT - ty;
+        float realY = ty;
         return tx >= x && tx <= x + width && realY >= y && realY <= y + height;
     }
 

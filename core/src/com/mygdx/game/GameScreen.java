@@ -3,6 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.objects.*;
 import java.util.ArrayList;
@@ -18,10 +19,10 @@ public class GameScreen implements Screen {
 
     public GameScreen(MyGdxGame game) {
         this.game = game;
-        ship = new ShipObject(GameSettings.SCREEN_WIDTH / 2f, 150, game.world);
+        ship = new ShipObject(GameSettings.SCREEN_WIDTH / 2f, 1000, game.world);
         session = new GameSession();
         bg = new MovingBackground(GameResources.BACKGROUND_IMG_PATH);
-        btnMenu = new Buton(20, GameSettings.SCREEN_HEIGHT - 100, 100, 60, "MENU");
+        btnMenu = new Buton(20, GameSettings.SCREEN_HEIGHT - 100, 100, 67, "MENU");
         game.world.setContactListener(new MyContactListener(session));
     }
 
@@ -68,13 +69,17 @@ public class GameScreen implements Screen {
         for (BulletObject b : bullets) b.draw(game.batch);
         btnMenu.draw(game.batch);
 
-        game.font.draw(game.batch, "SCORE: " + session.score, 50, GameSettings.SCREEN_HEIGHT - 50);
-        game.font.draw(game.batch, "LIVES: " + session.lives, GameSettings.SCREEN_WIDTH - 150, GameSettings.SCREEN_HEIGHT - 50);
+        game.font.draw(game.batch, "SCORE: " + session.score, 500, GameSettings.SCREEN_HEIGHT - 50);
+        game.font.draw(game.batch, "LIVES: " + session.lives, GameSettings.SCREEN_WIDTH - 400, GameSettings.SCREEN_HEIGHT - 50);
 
         game.batch.end();
 
         if (session.lives <= 0) {
             game.setScreen(new MenuScreen(game));
+        }
+        if (session.score >= 10000) {
+            session.score = 0;
+            System.out.println("Cheater");
         }
     }
 
@@ -83,9 +88,9 @@ public class GameScreen implements Screen {
             game.touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             game.camera.unproject(game.touch);
             ship.move(game.touch);
-            float tx = Gdx.input.getX();
-            float ty = Gdx.input.getY();
-            if (btnMenu.isHit(tx, ty)) {
+
+            Vector3 touch = game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if (btnMenu.isHit(touch.x, touch.y)) {
                 game.setScreen(new MenuScreen(game));
             }
         }

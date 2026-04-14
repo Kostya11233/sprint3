@@ -29,8 +29,11 @@ public class MyContactListener implements ContactListener {
         if (!bullet.wasHit && !trash.wasHit) {
             bullet.wasHit = true;
             trash.wasHit = true;
-            gameSession.score++;
+            gameSession.score ++;
+
         }
+
+
     }
 
     private void handle(ShipObject ship, TrashObject trash) {

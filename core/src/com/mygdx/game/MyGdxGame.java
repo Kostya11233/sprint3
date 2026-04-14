@@ -15,6 +15,7 @@ public class MyGdxGame extends Game {
 	public World world;
 	public Vector3 touch = new Vector3();
 	public BitmapFont font;
+	public GameScreen setScreen;
 	private float accumulator = 0;
 
 	@Override
