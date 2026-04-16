@@ -6,7 +6,7 @@ public class GameSettings {
 
     public static final float SHIP_WIDTH = 80;
     public static final float SHIP_HEIGHT = 80;
-    public static final float SHIP_FORCE_RATIO = 15f;
+    public static final float SHIP_FORCE_RATIO = 25f;
     public static final int SHIP_START_LIVES = 3;
 
     public static final int TRASH_WIDTH = 60;

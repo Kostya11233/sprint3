@@ -33,10 +33,12 @@ public class Buton {
         font.draw(batch, text, textX, textY);
     }
 
+    // 🔥 ИСПРАВЛЕННЫЙ МЕТОД isHit 🔥
     public boolean isHit(float tx, float ty) {
-        float realY = ty;
-        return tx >= x && tx <= x + width && realY >= y && realY <= y + height;
-    }
+            float realY = ty;
+            return tx >= x && tx <= x + width && realY >= y && realY <= y + height;
+        }
+
 
     public void dispose() {
         texture.dispose();

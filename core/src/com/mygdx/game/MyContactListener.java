@@ -1,6 +1,7 @@
-package com.mygdx.game;
+package com.mygdx.game.managers;
 
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.game.GameSession;
 import com.mygdx.game.objects.BulletObject;
 import com.mygdx.game.objects.ShipObject;
 import com.mygdx.game.objects.TrashObject;
@@ -29,11 +30,8 @@ public class MyContactListener implements ContactListener {
         if (!bullet.wasHit && !trash.wasHit) {
             bullet.wasHit = true;
             trash.wasHit = true;
-            gameSession.score ++;
-
+            gameSession.score++;
         }
-
-
     }
 
     private void handle(ShipObject ship, TrashObject trash) {

@@ -16,7 +16,9 @@ public class GameOverScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.justTouched()) game.setScreen(new MenuScreen(game));
+        if (Gdx.input.justTouched()) {
+            game.setScreen(new GameScreen(game));
+        }
         ScreenUtils.clear(Color.BLACK);
         game.camera.update();
         game.batch.setProjectionMatrix(game.camera.combined);
