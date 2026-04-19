@@ -6,8 +6,8 @@ public class GameSettings {
 
     public static final float SHIP_WIDTH = 80;
     public static final float SHIP_HEIGHT = 80;
-    public static final float SHIP_FORCE_RATIO = 25f;
-    public static final int SHIP_START_LIVES = 3;
+    public static final float SHIP_FORCE_RATIO = 15f;
+    public static int SHIP_START_LIVES = 3;
 
     public static final int TRASH_WIDTH = 60;
     public static final int TRASH_HEIGHT = 60;
@@ -21,6 +21,15 @@ public class GameSettings {
 
     public static final float STEP_TIME = 1 / 60f;
 
+    public static final int HEALTH_PACK_WIDTH = 50;
+    public static final int HEALTH_PACK_HEIGHT = 50;
+    public static final float HEALTH_PACK_SPEED = 150f;
+
+    public static final short CATEGORY_HEALTH_PACK = 8;
+
+    public static final int MAX_LIVES = 6;
+    public static final long HEALTH_PACK_SPAWN_COOLDOWN = 10000;
+    public static final long HEALTH_PACK_DELAY_AFTER_SCORE = 500;
     public static final short CATEGORY_SHIP = 1;
     public static final short CATEGORY_BULLET = 2;
     public static final short CATEGORY_TRASH = 4;

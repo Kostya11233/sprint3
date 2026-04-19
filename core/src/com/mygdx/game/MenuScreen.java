@@ -5,50 +5,69 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.mygdx.game.components.MovingBackground;
+import com.mygdx.game.managers.MyGdxGame;
+
+import java.util.ArrayList;
 
 public class MenuScreen implements Screen {
     MyGdxGame game;
-    Buton btnStart;
-    Buton btnSettings;
-    Buton btnExit;
-    MovingBackground bg;
+    Buton btnStart, btnMusic, btnExit;
+    ArrayList<Integer> records;
 
     public MenuScreen(MyGdxGame game) {
         this.game = game;
-        bg = new MovingBackground(GameResources.BACKGROUND_IMG_PATH);
-        btnStart = new Buton(GameSettings.SCREEN_WIDTH / 2f - 100, 550, 200, 100, "START");
-        btnSettings = new Buton(GameSettings.SCREEN_WIDTH / 2f - 100, 400, 200, 100, "SETTINGS");
-        btnExit = new Buton(GameSettings.SCREEN_WIDTH / 2f - 100, 250, 200, 100, "EXIT");
+        btnStart = new Buton(260, 550, 200, 100, "START");
+        btnMusic = new Buton(260, 400, 200, 100, "MUSIC: " + (game.audioManager.isMusicOn ? "ON" : "OFF"));
+        btnExit  = new Buton(260, 250, 200, 100, "EXIT");
+        records = MemoryManager.loadRecords();
     }
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.justTouched()) {
-            Vector3 touch = game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if (btnStart.isHit(touch.x, touch.y)) {
-                game.setScreen(game.gameScreen);
-            }
-            if (btnSettings.isHit(touch.x, touch.y)) {
-                game.setScreen(game.settingsScreen);
-            }
-            if (btnExit.isHit(touch.x, touch.y)) {
-                Gdx.app.exit();
-            }
-        }
+        handleInput();
 
         ScreenUtils.clear(Color.BLACK);
         game.camera.update();
         game.batch.setProjectionMatrix(game.camera.combined);
         game.batch.begin();
 
-        bg.draw(game.batch);
-        game.font.draw(game.batch, "SPACE CLEANER", 260, 900);
+        game.font.draw(game.batch, "SPACE CLEANER", 260, 700);
         btnStart.draw(game.batch);
-        btnSettings.draw(game.batch);
+        btnMusic.draw(game.batch);
         btnExit.draw(game.batch);
 
+
+        float y = GameSettings.SCREEN_HEIGHT - 50;
+        game.font.draw(game.batch, "--- TOP 7 RECORDS ---", 250, y);
+        y -= 40;
+        for (int i = 0; i < Math.min(records.size(), 7); i++) {
+            game.font.draw(game.batch, (i + 1) + ". " + records.get(i), 300, y);
+            y -= 35;
+        }
+
         game.batch.end();
+    }
+
+    private void handleInput() {
+        if (!Gdx.input.isTouched()) return;
+
+        float tx = Gdx.input.getX();
+        float ty = Gdx.input.getY();
+        float realY = GameSettings.SCREEN_HEIGHT - ty;
+
+        if (btnStart.isHit(tx, realY)) {
+            game.setScreen(new GameScreen(game));
+            return;
+        }
+        if (btnMusic.isHit(tx, realY)) {
+            game.audioManager.toggleMusic();
+            btnMusic.setText("MUSIC: " + (game.audioManager.isMusicOn ? "ON" : "OFF"));
+            return;
+        }
+        if (btnExit.isHit(tx, realY)) {
+            Gdx.app.exit();
+            return;
+        }
     }
 
     @Override public void show() {}
@@ -56,10 +75,10 @@ public class MenuScreen implements Screen {
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
+
     @Override public void dispose() {
-        bg.dispose();
         btnStart.dispose();
-        btnSettings.dispose();
+        btnMusic.dispose();
         btnExit.dispose();
     }
 }

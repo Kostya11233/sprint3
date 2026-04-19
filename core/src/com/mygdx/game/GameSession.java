@@ -1,48 +1,29 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.utils.TimeUtils;
+import java.util.ArrayList;
 
 public class GameSession {
-    private long sessionStartTime, lastShotTime, nextTrashSpawnTime;
-    private long pauseStartTime = 0;
-    private long totalPausedTime = 0;
-    public int score = 0;
-    public int lives = GameSettings.SHIP_START_LIVES;
-    public GameState state = GameState.PLAYING;
+    private long sessionStartTime, lastShotTime, nextTrashSpawnTime, nextHealthPackSpawnTime;
+    private int destructedTrashNumber = 0;
     private boolean isGameStarted = false;
+    public int lives = GameSettings.SHIP_START_LIVES;
+
+    private int scoreForNextHealthPack = 20;
+    private boolean healthPackSpawnRequested = false;
 
     public void startGame() {
         isGameStarted = true;
         sessionStartTime = TimeUtils.millis();
         lastShotTime = sessionStartTime;
         nextTrashSpawnTime = sessionStartTime + GameSettings.STARTING_TRASH_APPEARANCE_COOL_DOWN;
+        nextHealthPackSpawnTime = sessionStartTime + GameSettings.HEALTH_PACK_SPAWN_COOLDOWN;
     }
 
-    public boolean isGameStarted() {
-        return isGameStarted;
-    }
-
-    public void pauseGame() {
-        if (state == GameState.PLAYING) {
-            state = GameState.PAUSED;
-            pauseStartTime = TimeUtils.millis();
-        }
-    }
-
-    public void resumeGame() {
-        if (state == GameState.PAUSED) {
-            long pauseDuration = TimeUtils.millis() - pauseStartTime;
-            totalPausedTime += pauseDuration;
-            state = GameState.PLAYING;
-        }
-    }
-
-    public long getCurrentTime() {
-        return TimeUtils.millis() - totalPausedTime;
-    }
+    public boolean isGameStarted() { return isGameStarted; }
 
     public boolean needToShoot() {
-        long now = getCurrentTime();
+        long now = TimeUtils.millis();
         if (now - lastShotTime >= GameSettings.SHOOTING_COOL_DOWN) {
             lastShotTime = now;
             return true;
@@ -51,7 +32,7 @@ public class GameSession {
     }
 
     public boolean shouldSpawnTrash() {
-        long now = getCurrentTime();
+        long now = TimeUtils.millis();
         if (now >= nextTrashSpawnTime) {
             long elapsed = now - sessionStartTime;
             float cooldown = Math.max(0.2f, 1f - Math.min(0.9f, elapsed / 60000f));
@@ -59,5 +40,56 @@ public class GameSession {
             return true;
         }
         return false;
+    }
+
+
+    public boolean shouldSpawnHealthPack() {
+        long now = TimeUtils.millis();
+        if (healthPackSpawnRequested && now >= nextHealthPackSpawnTime) {
+            healthPackSpawnRequested = false;
+            nextHealthPackSpawnTime = now + GameSettings.HEALTH_PACK_SPAWN_COOLDOWN;
+            return true;
+        }
+        return false;
+    }
+
+
+    public void destructionRegistration() {
+        destructedTrashNumber++;
+
+
+        if (getScore() >= scoreForNextHealthPack) {
+            scoreForNextHealthPack += 20;
+            healthPackSpawnRequested = true;
+            nextHealthPackSpawnTime = TimeUtils.millis() + GameSettings.HEALTH_PACK_DELAY_AFTER_SCORE;
+        }
+    }
+
+
+    public void onShipHit() {
+
+    }
+
+
+    public void onHealthPackCollected() {
+
+        if (lives > GameSettings.MAX_LIVES) {
+            lives = GameSettings.MAX_LIVES;
+        }
+    }
+
+    public int getScore() {
+        return destructedTrashNumber * 1;
+    }
+
+    public void endGame() {
+        isGameStarted = false;
+        ArrayList<Integer> records = MemoryManager.loadRecords();
+        int finalScore = getScore();
+        int idx = 0;
+        while (idx < records.size() && records.get(idx) > finalScore) idx++;
+        records.add(idx, finalScore);
+        if (records.size() > 7) records.remove(7);
+        MemoryManager.saveRecords(records);
     }
 }

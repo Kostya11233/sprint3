@@ -1,11 +1,18 @@
-package com.mygdx.game;
+package com.mygdx.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.Buton;
+import com.mygdx.game.GameResources;
+import com.mygdx.game.MemoryManager;
+import com.mygdx.game.MenuScreen;
 import com.mygdx.game.components.MovingBackground;
+import com.mygdx.game.managers.MyGdxGame;
+import java.util.ArrayList;
+
 public class SettingsScreen implements Screen {
     MyGdxGame game;
     MovingBackground bg;
@@ -14,52 +21,18 @@ public class SettingsScreen implements Screen {
     Buton btnSound;
     Buton btnClearRecords;
 
-    boolean isMusicOn = true;
-    boolean isSoundOn = true;
-
     public SettingsScreen(MyGdxGame game) {
         this.game = game;
         bg = new MovingBackground(GameResources.BACKGROUND_IMG_PATH);
         btnReturn = new Buton(260, 150, 200, 100, "RETURN");
-        btnMusic = new Buton(260, 500, 200, 100, "MUSIC: ON");
-        btnSound = new Buton(260, 350, 200, 100, "SOUND: ON");
-        btnClearRecords = new Buton(260, 200, 200, 100, "CLEAR");
-    }
-
-    private void updateMusicButton() {
-        btnMusic.text = "MUSIC: " + (isMusicOn ? "ON" : "OFF");
-    }
-
-    private void updateSoundButton() {
-        btnSound.text = "SOUND: " + (isSoundOn ? "ON" : "OFF");
+        btnMusic = new Buton(260, 550, 200, 100, "MUSIC: " + (game.audioManager.isMusicOn ? "ON" : "OFF"));
+        btnSound = new Buton(260, 400, 200, 100, "SOUND: " + (game.audioManager.isSoundOn ? "ON" : "OFF"));
+        btnClearRecords = new Buton(260, 250, 200, 100, "CLEAR");
     }
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.justTouched()) {
-            Vector3 touch = game.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if (btnReturn.isHit(touch.x, touch.y)) {
-                game.setScreen(game.menuScreen);
-            }
-            if (btnMusic.isHit(touch.x, touch.y)) {
-                isMusicOn = !isMusicOn;
-                updateMusicButton();
-                if (game.audioManager != null) {
-                    game.audioManager.isMusicOn = isMusicOn;
-                    game.audioManager.updateMusicFlag();
-                }
-            }
-            if (btnSound.isHit(touch.x, touch.y)) {
-                isSoundOn = !isSoundOn;
-                updateSoundButton();
-                if (game.audioManager != null) {
-                    game.audioManager.isSoundOn = isSoundOn;
-                }
-            }
-            if (btnClearRecords.isHit(touch.x, touch.y)) {
-                System.out.println("Records cleared");
-            }
-        }
+        handleInput();
 
         ScreenUtils.clear(Color.BLACK);
         game.camera.update();
@@ -76,11 +49,53 @@ public class SettingsScreen implements Screen {
         game.batch.end();
     }
 
+    private void handleInput() {
+        if (!Gdx.input.isTouched()) return;
+
+
+        float screenX = Gdx.input.getX();
+        float screenY = Gdx.input.getY();
+
+
+        Vector3 touch = new Vector3(screenX, screenY, 0);
+        game.camera.unproject(touch);
+
+        float worldX = touch.x;
+        float worldY = touch.y;
+
+
+        if (btnReturn.isHit(worldX, worldY)) {
+            game.setScreen(new MenuScreen(game));
+            return;
+        }
+        if (btnMusic.isHit(worldX, worldY)) {
+            boolean newState = !game.audioManager.isMusicOn;
+            MemoryManager.saveMusicSettings(newState);
+            game.audioManager.isMusicOn = newState;
+            game.audioManager.updateMusicFlag();
+            btnMusic.setText("MUSIC: " + (newState ? "ON" : "OFF"));
+            return;
+        }
+        if (btnSound.isHit(worldX, worldY)) {
+            boolean newState = !game.audioManager.isSoundOn;
+            MemoryManager.saveSoundSettings(newState);
+            game.audioManager.isSoundOn = newState;
+            btnSound.setText("SOUND: " + (newState ? "ON" : "OFF"));
+            return;
+        }
+        if (btnClearRecords.isHit(worldX, worldY)) {
+            ArrayList<Integer> emptyList = new ArrayList<Integer>();
+            MemoryManager.saveRecords(emptyList);
+            return;
+        }
+    }
+
     @Override public void show() {}
     @Override public void resize(int w, int h) {}
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
+
     @Override public void dispose() {
         bg.dispose();
         btnReturn.dispose();

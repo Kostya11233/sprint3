@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.managers;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.game.managers.AudioManager;
+import com.mygdx.game.AudioManager;
+import com.mygdx.game.GameSettings;
+import com.mygdx.game.MenuScreen;
 
 public class MyGdxGame extends Game {
 	public SpriteBatch batch;
@@ -16,12 +18,7 @@ public class MyGdxGame extends Game {
 	public World world;
 	public Vector3 touch = new Vector3();
 	public BitmapFont font;
-
-	public GameScreen gameScreen;
-	public MenuScreen menuScreen;
-	public SettingsScreen settingsScreen;
 	public AudioManager audioManager;
-
 	private float accumulator = 0;
 
 	@Override
@@ -32,14 +29,8 @@ public class MyGdxGame extends Game {
 		world = new World(new Vector2(0, 0), true);
 		font = new BitmapFont();
 		font.getData().setScale(2f);
-
 		audioManager = new AudioManager();
-
-		gameScreen = new GameScreen(this);
-		menuScreen = new MenuScreen(this);
-		settingsScreen = new SettingsScreen(this);
-
-		setScreen(menuScreen);
+		setScreen(new MenuScreen(this));
 	}
 
 	public void stepWorld() {
@@ -55,6 +46,6 @@ public class MyGdxGame extends Game {
 		batch.dispose();
 		world.dispose();
 		font.dispose();
-		if (audioManager != null) audioManager.dispose();
+		audioManager.dispose();
 	}
 }
