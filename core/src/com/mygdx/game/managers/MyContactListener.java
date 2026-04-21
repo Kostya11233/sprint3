@@ -10,7 +10,6 @@ public class MyContactListener implements ContactListener {
     GameSession session;
     AudioManager audioManager;
 
-
     public MyContactListener(GameSession session, AudioManager audioManager) {
         this.session = session;
         this.audioManager = audioManager;
@@ -21,25 +20,25 @@ public class MyContactListener implements ContactListener {
         Object a = contact.getFixtureA().getBody().getUserData();
         Object b = contact.getFixtureB().getBody().getUserData();
 
-
+        // Пуля + Мусор
         if (a instanceof BulletObject && b instanceof TrashObject)
             handle((BulletObject) a, (TrashObject) b);
         else if (a instanceof TrashObject && b instanceof BulletObject)
             handle((BulletObject) b, (TrashObject) a);
 
-
+            // Корабль + Мусор
         else if (a instanceof ShipObject && b instanceof TrashObject)
             handle((ShipObject) a, (TrashObject) b);
         else if (a instanceof TrashObject && b instanceof ShipObject)
             handle((ShipObject) b, (TrashObject) a);
 
-
+            // Корабль + Аптечка (исправлено!)
         else if (a instanceof ShipObject && b instanceof HealthPackObject)
             handle((ShipObject) a, (HealthPackObject) b);
         else if (a instanceof HealthPackObject && b instanceof ShipObject)
-            handle((ShipObject) b, (HealthPackObject) a);
+            handle((ShipObject) b, (HealthPackObject) a);  // ← лишнюю строку удалил
 
-
+            // Пуля + Аптечка
         else if (a instanceof BulletObject && b instanceof HealthPackObject)
             handle((BulletObject) a, (HealthPackObject) b);
         else if (a instanceof HealthPackObject && b instanceof BulletObject)
@@ -68,11 +67,19 @@ public class MyContactListener implements ContactListener {
         }
     }
 
+    // ИСПРАВЛЕНО: увеличиваем session.lives, а не константу
     void handle(ShipObject s, HealthPackObject h) {
         if (!h.isCollected) {
             h.isCollected = true;
-            GameSettings.SHIP_START_LIVES ++;
+            session.lives++;
+
+            // Ограничиваем максимум жизней (если есть MAX_LIVES)
+            if (session.lives > GameSettings.MAX_LIVES) {
+                session.lives = GameSettings.MAX_LIVES;
+            }
+
             System.out.println("Health pack collected! Lives: " + session.lives);
+
 
         }
     }
