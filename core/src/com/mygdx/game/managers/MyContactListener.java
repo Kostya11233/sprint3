@@ -32,11 +32,11 @@ public class MyContactListener implements ContactListener {
         else if (a instanceof TrashObject && b instanceof ShipObject)
             handle((ShipObject) b, (TrashObject) a);
 
-            // Корабль + Аптечка (исправлено!)
+            // Корабль + Аптечка
         else if (a instanceof ShipObject && b instanceof HealthPackObject)
             handle((ShipObject) a, (HealthPackObject) b);
         else if (a instanceof HealthPackObject && b instanceof ShipObject)
-            handle((ShipObject) b, (HealthPackObject) a);  // ← лишнюю строку удалил
+            handle((ShipObject) b, (HealthPackObject) a); 
 
             // Пуля + Аптечка
         else if (a instanceof BulletObject && b instanceof HealthPackObject)
@@ -67,13 +67,13 @@ public class MyContactListener implements ContactListener {
         }
     }
 
-    // ИСПРАВЛЕНО: увеличиваем session.lives, а не константу
+
     void handle(ShipObject s, HealthPackObject h) {
         if (!h.isCollected) {
             h.isCollected = true;
             session.lives++;
 
-            // Ограничиваем максимум жизней (если есть MAX_LIVES)
+
             if (session.lives > GameSettings.MAX_LIVES) {
                 session.lives = GameSettings.MAX_LIVES;
             }
