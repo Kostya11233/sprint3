@@ -51,20 +51,22 @@ public class MenuScreen implements Screen {
     private void handleInput() {
         if (!Gdx.input.isTouched()) return;
 
-        float tx = Gdx.input.getX();
-        float ty = Gdx.input.getY();
-        float realY = GameSettings.SCREEN_HEIGHT - ty;
+        Vector3 touch = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        game.camera.unproject(touch);
 
-        if (btnStart.isHit(tx, realY)) {
+        float worldX = touch.x;
+        float worldY = touch.y;
+
+        if (btnStart.isHit(touch.x, touch.y)) {
             game.setScreen(new GameScreen(game));
             return;
         }
-        if (btnMusic.isHit(tx, realY)) {
+        if (btnMusic.isHit(touch.x, touch.y)) {
             game.audioManager.toggleMusic();
             btnMusic.setText("MUSIC: " + (game.audioManager.isMusicOn ? "ON" : "OFF"));
             return;
         }
-        if (btnExit.isHit(tx, realY)) {
+        if (btnExit.isHit(touch.x, touch.y)) {
             Gdx.app.exit();
             return;
         }
